@@ -32,7 +32,18 @@
         .category-container { display: flex; justify-content: center; margin: 20px 0; }
         .category-box { background: rgba(40, 40, 40, 0.5); backdrop-filter: blur(15px); border-radius: 50px; display: flex; padding: 5px; position: relative; border: 1px solid var(--glass-border); width: 220px; }
         .category-box span { flex: 1; text-align: center; padding: 12px 0; z-index: 2; font-weight: 600; cursor: pointer; }
-        .liquid-bubble { position: absolute; top: 5px; left: 5px; width: 105px; height: calc(100% - 10px); background: var(--ios-accent); border-radius: 50px; z-index: 1; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .liquid-bubble { 
+    display: none; /* මෙන්න මේ පේළිය තමයි වැදගත්ම, මේකෙන් තමා බෝලය මුලින් hide වෙන්නේ */
+    position: absolute; 
+    top: 5px; 
+    left: 5px; 
+    width: 105px; 
+    height: calc(100% - 10px); 
+    background: var(--ios-accent); 
+    border-radius: 50px; 
+    z-index: 1; 
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+}
 
         .sidebar { position: fixed; left: -100%; top: 0; width: 75%; height: 100%; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(35px); transition: 0.5s; z-index: 2100; padding: 50px 25px; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
@@ -288,20 +299,38 @@ window.showSection = (id) => {
 
         // Listeners
         onSnapshot(query(collection(db, "videos"), orderBy("timestamp", "desc")), (s) => {
-            let h = ''; s.forEach(doc => {
-                const vidId = doc.data().url.split('v=')[1]?.split('&')[0] || doc.data().url.split('/').pop();
-                h += `<div class="card video-card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
-                        <img src="https://i.ytimg.com/vi/${vidId}/mqdefault.jpg" class="video-thumb">
-                        <h3 style="font-size:16px; margin:5px 0;">${doc.data().title}</h3>
-                        <button class="ios-btn" onclick="playVideo('${doc.data().url}')">Watch Video</button>
-                      </div>`;
-            }); document.getElementById('vList').innerHTML = h;
-        });
+    let h = ''; 
+    s.forEach(doc => {
+        const url = doc.data().url;
+        let vidId = "";
+        
+        if (url.includes('v=')) {
+            vidId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            vidId = url.split('youtu.be/')[1].split('?')[0];
+        } else {
+            vidId = url.split('/').pop();
+        }
+
+        h += `<div class="card video-card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
+                <img src="https://i.ytimg.com/vi/${vidId}/mqdefault.jpg" class="video-thumb" style="width:100%; height:auto; border-radius:15px;">
+                <h3 style="font-size:16px; margin:10px 0;">${doc.data().title}</h3>
+                <button class="ios-btn" onclick="playVideo('${url}')">Watch Video</button>
+              </div>`;
+    }); 
+    document.getElementById('vList').innerHTML = h;
+});
 
         onSnapshot(collection(db, "notes"), (s) => {
-            let h = ''; s.forEach(doc => h += `<div class="card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);"><h3>${doc.data().title}</h3><p style="white-space: pre-wrap;">${doc.data().text}</p></div>`);
-            document.getElementById('nList').innerHTML = h;
-        });
+    let h = ''; 
+    s.forEach(doc => {
+        h += `<div class="card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
+                <h3 style="color:var(--ios-accent); margin-bottom:10px;">${doc.data().title}</h3>
+                <p style="white-space: pre-wrap; opacity:0.9;">${doc.data().text}</p>
+              </div>`;
+    }); 
+    document.getElementById('nList').innerHTML = h;
+});
 
         onSnapshot(collection(db, "events"), (s) => {
             let h = ''; s.forEach(doc => h += `<div class="menu-item event-item" onclick="window.open('${doc.data().link}', '_blank')"><i class="fas fa-calendar-check"></i> ${doc.data().name}</div>`);
