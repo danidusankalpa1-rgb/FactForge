@@ -6,6 +6,154 @@
     <title>FactForge - iOS 26 Liquid UI Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+    /* Enhance/* ප්ලේයර් එකේ හැඩය සහ වීඩියෝ එකේ අනුපාතය */
+/* --- Liquid Player Pro UI --- */
+#liquidPlayer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(15px);
+    align-items: center;
+    justify-content: center;
+}
+
+.player-container {
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(30px);
+    border-radius: 30px;
+    width: 90%;
+    max-width: 450px; /* ප්ලේයර් එකේ පළල පොඩි කළා */
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    position: relative;
+    animation: liquidIn 0.5s ease;
+}
+
+.video-header {
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.video-title-text {
+    font-size: 14px; /* Title එක පොඩි කළා */
+    font-weight: 600;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.iframe-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    position: relative;
+}
+
+#descriptionPanel {
+    position: absolute;
+    bottom: -100%; /* මේකෙන් තමයි පැනල් එක පල්ලෙහාට හැංගෙන්නේ */
+    left: 0;
+    width: 100%;
+    height: 75%;
+    background: rgba(25, 25, 25, 0.98);
+    backdrop-filter: blur(25px);
+    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    padding: 20px;
+    border-top: 3px solid var(--ios-accent);
+    border-radius: 25px 25px 0 0;
+}
+
+/* මේ class එක function එකෙන් add වුණාම තමයි පැනල් එක උඩට එන්නේ */
+#descriptionPanel.active { 
+    bottom: 0; 
+}
+
+.player-controls {
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.volume-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+.ios-btn-small {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 8px;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+}
+
+
+.video-header {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.video-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#descriptionPanel {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(20px);
+    transition: bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    padding: 25px;
+    border-top: 2px solid var(--ios-accent);
+    border-radius: 30px 30px 0 0;
+}
+
+#descriptionPanel.active { bottom: 0; }
+
+.desc-content {
+    height: 80%;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+    word-break: break-all;
+}
+
+.desc-content a { color: var(--ios-accent); text-decoration: none; }
+
+.player-controls {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
         :root {
             --ios-accent: #ff3b30;
             --glass: rgba(30, 30, 30, 0.6);
@@ -63,6 +211,14 @@
 
         .video-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .video-thumb { width: 150px; height: 85px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--glass-border); }
+        .video-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* වීඩියෝ එකේ නියම හැඩය පෙන්වීමට */
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
 
         #notifPopup { display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: var(--glass); backdrop-filter: blur(30px); border-radius: 24px; padding: 20px; z-index: 1500; border: 1px solid var(--glass-border); }
         .section { display: none; padding: 10px 20px; }
@@ -101,12 +257,28 @@
         </div>
     </div>
 
-    <div id="liquidPlayer">
-        <div class="player-wrapper">
-            <div class="back-nav" onclick="closeVideo()"><i class="fas fa-chevron-left"></i> &nbsp; Back to FactForge</div>
-            <iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe>
+<div id="liquidPlayer">
+    <div class="player-container">
+        <div class="video-header">
+            <i class="fas fa-chevron-left" onclick="closeVideo()" style="color:var(--ios-accent); cursor:pointer;"></i>
+            <span id="videoTitleDisplay" class="video-title-text">Loading...</span>
+        </div>
+
+        <div class="iframe-wrapper">
+            <iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+
+        <div class="player-controls">
+            <div class="volume-row">
+                <i class="fas fa-volume-down" style="font-size: 12px; opacity: 0.5;"></i>
+                <input type="range" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value)" style="margin:0; height:4px; flex:1;">
+                <i class="fas fa-volume-up" style="font-size: 12px; opacity: 0.5;"></i>
+            </div>
         </div>
     </div>
+</div>
+
+</div>
 
     <header>
         <i class="fas fa-bars-staggered" onclick="toggleSidebar(true)"></i>
@@ -301,9 +473,11 @@ window.showSection = (id) => {
         onSnapshot(query(collection(db, "videos"), orderBy("timestamp", "desc")), (s) => {
     let h = ''; 
     s.forEach(doc => {
-        const url = doc.data().url;
+        const data = doc.data(); // පහසුව සඳහා data variable එකකට ගමු
+        const url = data.url;
         let vidId = "";
         
+        // YouTube ID එක වෙන් කරගැනීම
         if (url.includes('v=')) {
             vidId = url.split('v=')[1].split('&')[0];
         } else if (url.includes('youtu.be/')) {
@@ -313,13 +487,17 @@ window.showSection = (id) => {
         }
 
         h += `<div class="card video-card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
-                <img src="https://i.ytimg.com/vi/${vidId}/mqdefault.jpg" class="video-thumb" style="width:100%; height:auto; border-radius:15px;">
-                <h3 style="font-size:16px; margin:10px 0;">${doc.data().title}</h3>
-                <button class="ios-btn" onclick="playVideo('${url}')">Watch Video</button>
+                <img src="https://i.ytimg.com/vi/${vidId}/hqdefault.jpg" class="video-thumb" style="width:100%; height:auto; border-radius:15px; object-fit: cover;">
+                <h3 style="font-size:16px; margin:10px 0;">${data.title}</h3>
+                
+                <button class="ios-btn" onclick="playVideo('${url}', \`${data.title}\`, \`${data.text || ''}\`)">Watch Video</button>
+                
               </div>`;
     }); 
     document.getElementById('vList').innerHTML = h;
 });
+
+
 
         onSnapshot(collection(db, "notes"), (s) => {
     let h = ''; 
@@ -343,20 +521,39 @@ window.showSection = (id) => {
             if(!s.metadata.hasPendingWrites) document.getElementById('notifDot').style.display = 'block';
         });
 
-        window.playVideo = (url) => {
-            const id = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
-            document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-            document.getElementById('liquidPlayer').style.display = 'flex';
-        };
-        window.closeVideo = () => { document.getElementById('liquidPlayer').style.display = 'none'; document.getElementById('ytFrame').src = ''; };
+        window.playVideo = (url, title) => {
+    let vidId = "";
+    if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+    else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
+    else vidId = url.split('/').pop().split('?')[0];
 
-        function checkBirthday() {
-            const today = new Date();
-            const bDay = new Date(userData.dob);
-            if(today.getDate() === bDay.getDate() && today.getMonth() === bDay.getMonth()) {
-                document.getElementById('notifDot').style.display = 'block';
-            }
-        }
+    if (vidId) {
+        document.getElementById('videoTitleDisplay').innerText = title || "FactForge Video";
+        
+        // Volume වැඩ කිරීමට enablejsapi=1 අනිවාර්යයි
+        document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0&enablejsapi=1`;
+        document.getElementById('liquidPlayer').style.display = 'flex';
+        
+        document.getElementById('volumeSlider').value = 100;
+    }
+};
+
+window.setVolume = (value) => {
+    const iframe = document.getElementById('ytFrame');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({
+            "event": "command",
+            "func": "setVolume",
+            "args": [value]
+        }), "*");
+    }
+};
+
+window.closeVideo = () => {
+    document.getElementById('liquidPlayer').style.display = 'none';
+    document.getElementById('ytFrame').src = '';
+};
+
     </script>
 </body>
 </html>
