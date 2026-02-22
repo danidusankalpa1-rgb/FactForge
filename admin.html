@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FactForge Admin</title>
+    <style>
+        body { font-family: Arial; background: #f2f2f2; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        input, textarea, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: #ff0000; color: white; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="loginBox" class="box">
+        <img src="logo.jpg" style="width:80px;background:black;border-radius:10px;margin-bottom:10px">
+        <h2>Admin Login</h2>
+        <input type="password" id="pw" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p onclick="reset()" style="font-size:12px;cursor:pointer">Forgot Password?</p>
+    </div>
+
+    <div id="panel" class="box" style="display:none">
+        <h2>Admin Panel</h2>
+        <hr>
+        <input type="text" id="vt" placeholder="Video Title"><input type="text" id="vu" placeholder="YouTube Link">
+        <button onclick="add('videos',{title:vt.value,url:vu.value})">Upload Video</button>
+        <hr>
+        <input type="text" id="nt" placeholder="Note Title"><textarea id="nx" placeholder="Note Text" rows="4"></textarea>
+        <button onclick="add('notes',{title:nt.value,text:nx.value})">Upload Note</button>
+        <hr>
+        <input type="text" id="msg" placeholder="Notification Message">
+        <button onclick="add('notifications',{message:msg.value})">Send Notif</button>
+        <button style="background:black" onclick="location.reload()">Logout</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnv4y9sdTs20pc-ppc4CuxbRcPZacBXI8",
+            authDomain: "factforge-ece11.firebaseapp.com",
+            projectId: "factforge-ece11",
+            storageBucket: "factforge-ece11.firebasestorage.app",
+            messagingSenderId: "301436944758",
+            appId: "1:301436944758:web:547042aca0cf178e61ba57"
+        };
+
+        const db = getFirestore(initializeApp(firebaseConfig));
+        window.login = () => { if(document.getElementById('pw').value === "20231218"){ document.getElementById('loginBox').style.display='none'; document.getElementById('panel').style.display='block'; } else alert("Wrong!"); };
+        window.reset = () => { if(prompt("Enter PIN") === "5567") alert("Pass: 20231218"); };
+        window.add = async (col, data) => { 
+            data.timestamp = Date.now(); 
+            await addDoc(collection(db, col), data); 
+            alert("Success!"); location.reload(); 
+        };
+    </script>
+</body>
+</html>
