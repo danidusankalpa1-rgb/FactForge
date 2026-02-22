@@ -198,8 +198,39 @@
         .menu-item { padding: 16px; border-radius: 18px; display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); font-size: 17px; margin-bottom: 10px; }
         .menu-item i { margin-right: 15px; width: 20px; text-align: center; color: var(--ios-accent); }
 
-        @keyframes pulseEvent { 0% { transform: scale(1); } 50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(52, 199, 89, 0.2); } 100% { transform: scale(1); } }
-        .event-item { background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3); animation: pulseEvent 2s infinite ease-in-out; }
+        
+@keyframes vibrantPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(52, 199, 89, 0.3);
+    }
+    50% {
+        transform: scale(1.04); /* චුට්ටක් ලොකු වෙනවා */
+        background: rgba(52, 199, 89, 0.25); /* මැදදී පාට තද වෙනවා */
+        box-shadow: 0 0 20px rgba(52, 199, 89, 0.6); /* ලස්සනට ග්ලෝ වෙනවා */
+        border-color: rgba(52, 199, 89, 0.8);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(52, 199, 89, 0.3);
+    }
+}
+
+/* Event එක උඩට ඇඟිල්ල තියද්දී (Hover) */
+.event-item:active {
+    transform: scale(0.95);
+    background: rgba(52, 199, 89, 0.4);
+}
+
+.event-item { 
+    background: rgba(52, 199, 89, 0.15); /* කොළ පාට තව පොඩ්ඩක් වැඩි කළා */
+    border: 1.5px solid rgba(52, 199, 89, 0.5); /* බෝඩර් එක තව පැහැදිලි කළා */
+    color: #34c759; /* අකුරු වල පාට තද කොළ කළා */
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(52, 199, 89, 0.2);
+    animation: vibrantPulse 1.5s infinite ease-in-out; /* වේගය සහ ලස්සන වැඩි කළා */
+    transition: all 0.3s ease;
+}
 
         .liquid-popup { display: none; position: fixed; inset: 0; z-index: 4000; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); align-items: center; justify-content: center; padding: 20px; }
         .popup-content { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 30px; padding: 25px; width: 100%; max-width: 400px; animation: liquidIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
@@ -511,9 +542,16 @@ window.showSection = (id) => {
 });
 
         onSnapshot(collection(db, "events"), (s) => {
-            let h = ''; s.forEach(doc => h += `<div class="menu-item event-item" onclick="window.open('${doc.data().link}', '_blank')"><i class="fas fa-calendar-check"></i> ${doc.data().name}</div>`);
-            document.getElementById('sidebarEvents').innerHTML = h;
-        });
+    let h = ''; 
+    s.forEach(doc => {
+        h += `<div class="menu-item event-item" onclick="window.open('${doc.data().link}', '_blank')">
+                <i class="fas fa-bolt-lightning" style="color: #34c759 !important; margin-right: 15px; filter: drop-shadow(0 0 10px rgba(52, 199, 89, 0.8)); animation: electricGlow 0.8s infinite alternate;"></i> 
+                ${doc.data().name}
+              </div>`;
+    });
+    document.getElementById('sidebarEvents').innerHTML = h;
+});
+
 
         onSnapshot(query(collection(db, "notifications"), orderBy("timestamp", "desc")), (s) => {
             let h = ''; s.forEach(doc => h += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid var(--glass-border); font-size:14px;">${doc.data().message}</div>`);
