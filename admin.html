@@ -1,43 +1,161 @@
-
 <!DOCTYPE html>
 <html lang="si">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FactForge Admin</title>
+    <title>FactForge Admin - Final Professional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: Arial; background: #f2f2f2; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        input, textarea, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: #ff0000; color: white; border: none; font-weight: bold; cursor: pointer; }
+        :root {
+            --ios-accent: #ff3b30;
+            --glass: rgba(30, 30, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
+        input, textarea { -webkit-user-select: text; user-select: text; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: #000; margin: 0; color: #fff; min-height: 100vh;
+        }
+
+        /* LOGIN & RECOVERY */
+        #login-box, #recovery-box {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .liquid-card {
+            background: var(--glass); backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 40px 30px; width: 90%; max-width: 400px;
+            border: 1px solid var(--glass-border); text-align: center;
+        }
+
+        .admin-icon { font-size: 60px; color: var(--ios-accent); margin-bottom: 20px; }
+
+        input, textarea {
+            width: 100%; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 15px; color: #fff; margin-bottom: 15px; font-size: 16px;
+        }
+
+        .ios-btn {
+            background: var(--ios-accent); color: white; border: none; width: 100%;
+            padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .ios-btn:active { transform: scale(0.95); }
+
+        .forgot-link { display: block; margin-top: 20px; color: #aaa; font-size: 13px; cursor: pointer; }
+
+        /* DASHBOARD */
+        #admin-content { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .section-title { color: var(--ios-accent); margin: 30px 0 10px 5px; font-weight: 800; font-size: 18px; text-transform: uppercase; }
+        .form-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
+
+        .list-container { margin-top: 15px; max-height: 200px; overflow-y: auto; }
+        .list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px;
+            margin-bottom: 8px; border: 0.5px solid var(--glass-border);
+        }
+        .del-btn { color: var(--ios-accent); cursor: pointer; padding: 5px; }
+
+        /* USER MODAL STYLE */
+        #user-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 12000; padding: 20px; backdrop-filter: blur(15px);
+            flex-direction: column; align-items: center;
+        }
+        .modal-body { width: 100%; max-width: 500px; margin-top: 50px; }
+
+        #loading-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 11000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--ios-accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div id="loginBox" class="box">
-        <img src="logo.jpg" style="width:80px;background:black;border-radius:10px;margin-bottom:10px">
-        <h2>Admin Login</h2>
-        <input type="password" id="pw" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <p onclick="reset()" style="font-size:12px;cursor:pointer">Forgot Password?</p>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: bold;">PROCESSING...</p>
     </div>
 
-    <div id="panel" class="box" style="display:none">
-        <h2>Admin Panel</h2>
-        <hr>
-        <input type="text" id="vt" placeholder="Video Title"><input type="text" id="vu" placeholder="YouTube Link">
-        <button onclick="add('videos',{title:vt.value,url:vu.value})">Upload Video</button>
-        <hr>
-        <input type="text" id="nt" placeholder="Note Title"><textarea id="nx" placeholder="Note Text" rows="4"></textarea>
-        <button onclick="add('notes',{title:nt.value,text:nx.value})">Upload Note</button>
-        <hr>
-        <input type="text" id="msg" placeholder="Notification Message">
-        <button onclick="add('notifications',{message:msg.value})">Send Notif</button>
-        <button style="background:black" onclick="location.reload()">Logout</button>
+    <div id="login-box">
+        <div class="liquid-card">
+            <i class="fas fa-fingerprint admin-icon"></i>
+            <h2 style="margin-bottom: 25px;">ADMIN LOGIN</h2>
+            <input type="password" id="admin-pass-input" placeholder="Password">
+            <button class="ios-btn" onclick="checkLogin()">Unlock Dashboard</button>
+            <span class="forgot-link" onclick="showRecovery(true)">Forgot Password?</span>
+        </div>
+    </div>
+
+    <div id="recovery-box" style="display: none;">
+        <div class="liquid-card">
+            <i class="fas fa-shield-alt admin-icon"></i>
+            <h2 style="margin-bottom: 10px;">PIN VERIFY</h2>
+            <input type="password" id="pin-input" placeholder="Enter PIN" maxlength="4">
+            <button class="ios-btn" onclick="checkPin()">Verify PIN</button>
+            <span class="forgot-link" onclick="showRecovery(false)">Back</span>
+            <div id="pass-display" style="margin-top: 20px; font-weight: bold; color: #34c759; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="user-modal">
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color:var(--ios-accent);">Registered Users</h2>
+                <i class="fas fa-times-circle fa-2x" style="cursor:pointer;" onclick="toggleUserModal(false)"></i>
+            </div>
+            <div id="users-list" class="list-container" style="max-height: 80vh;"></div>
+        </div>
+    </div>
+
+    <div id="admin-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+            <i class="fas fa-user-shield fa-2x" style="color: var(--ios-accent); cursor:pointer;" onclick="toggleUserModal(true)"></i>
+            <h1 style="font-size: 24px;">Admin Panel</h1>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--ios-accent); font-weight:bold; cursor:pointer;">Logout</button>
+        </div>
+
+        <div class="section-title">Events</div>
+        <div class="form-group">
+            <input type="text" id="ev-name" placeholder="Event Name">
+            <input type="text" id="ev-link" placeholder="Link">
+            <button class="ios-btn" onclick="postData('events', { name: 'ev-name', link: 'ev-link' })">Add Event</button>
+            <div class="list-container" id="events-list"></div>
+        </div>
+
+        <div class="section-title">Videos</div>
+        <div class="form-group">
+            <input type="text" id="vid-title" placeholder="Title">
+            <input type="text" id="vid-url" placeholder="YouTube URL">
+            <button class="ios-btn" onclick="postData('videos', { title: 'vid-title', url: 'vid-url' })">Add Video</button>
+            <div class="list-container" id="videos-list"></div>
+        </div>
+
+        <div class="section-title">Notes</div>
+        <div class="form-group">
+            <input type="text" id="n-title" placeholder="Title">
+            <textarea id="n-text" rows="3" placeholder="Description"></textarea>
+            <button class="ios-btn" onclick="postData('notes', { title: 'n-title', text: 'n-text' })">Add Note</button>
+            <div class="list-container" id="notes-list"></div>
+        </div>
+
+        <div class="section-title">Announcements</div>
+        <div class="form-group">
+            <input type="text" id="msg" placeholder="Message">
+            <button class="ios-btn" onclick="postData('notifications', { message: 'msg' })">Send</button>
+            <div class="list-container" id="notifications-list"></div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBnv4y9sdTs20pc-ppc4CuxbRcPZacBXI8",
@@ -47,15 +165,93 @@
             messagingSenderId: "301436944758",
             appId: "1:301436944758:web:547042aca0cf178e61ba57"
         };
-
         const db = getFirestore(initializeApp(firebaseConfig));
-        window.login = () => { if(document.getElementById('pw').value === "20231218"){ document.getElementById('loginBox').style.display='none'; document.getElementById('panel').style.display='block'; } else alert("Wrong!"); };
-        window.reset = () => { if(prompt("Enter PIN") === "5567") alert("Pass: 20231218"); };
-        window.add = async (col, data) => { 
-            data.timestamp = Date.now(); 
-            await addDoc(collection(db, col), data); 
-            alert("Success!"); location.reload(); 
+
+        // Login Logic
+        window.checkLogin = () => {
+            if(document.getElementById('admin-pass-input').value === '202') {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                sync();
+            } else { alert("Wrong Password!"); }
         };
+
+        window.showRecovery = (s) => { 
+            document.getElementById('login-box').style.display = s ? 'none' : 'flex'; 
+            document.getElementById('recovery-box').style.display = s ? 'flex' : 'none'; 
+        };
+
+        window.checkPin = () => {
+            if(document.getElementById('pin-input').value === '5567') {
+                document.getElementById('pass-display').innerText = "Password: 202";
+                document.getElementById('pass-display').style.display = 'block';
+            } else { alert("Wrong PIN!"); }
+        };
+
+        window.toggleUserModal = (s) => {
+            document.getElementById('user-modal').style.display = s ? 'flex' : 'none';
+        };
+
+        // CRUD Operations
+        window.postData = async (col, fields) => {
+            const data = { timestamp: serverTimestamp() };
+            for(let key in fields) {
+                const val = document.getElementById(fields[key]).value.trim();
+                if(!val) return alert("Fill all fields!");
+                data[key] = val;
+            }
+            document.getElementById('loading-overlay').style.display = 'flex';
+            try {
+                await addDoc(collection(db, col), data);
+                for(let key in fields) document.getElementById(fields[key]).value = '';
+            } catch(e) { alert("Error adding data!"); }
+            setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 800);
+        };
+
+        window.del = async (c, i) => { 
+            if(confirm("Delete this permanently?")) {
+                document.getElementById('loading-overlay').style.display = 'flex';
+                await deleteDoc(doc(db, c, i));
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        };
+
+        // Real-time Sync
+        function sync() {
+            // Main Dashboard Lists
+            ['events', 'videos', 'notes', 'notifications'].forEach(col => {
+                onSnapshot(query(collection(db, col), orderBy("timestamp", "desc")), (s) => {
+                    let h = '';
+                    s.forEach(d => {
+                        let t = d.data().name || d.data().title || d.data().message;
+                        h += `<div class="list-item"><span>${t}</span><i class="fas fa-trash del-btn" onclick="del('${col}','${d.id}')"></i></div>`;
+                    });
+                    document.getElementById(col + '-list').innerHTML = h || '<p style="opacity:0.3; font-size:12px;">Empty</p>';
+                });
+            });
+
+            // Users Sync - Connecting to "users" collection from User App
+            onSnapshot(collection(db, "users"), (s) => {
+                let h = '';
+                s.forEach(d => {
+                    const data = d.data();
+                    h += `<div class="list-item" style="padding:15px; flex-direction: column; align-items: flex-start; gap: 5px;">
+                            <div style="width:100%; display:flex; justify-content:space-between;">
+                                <b style="color:var(--ios-accent); font-size:16px;">${data.name || 'Unknown User'}</b>
+                                <i class="fas fa-user-times del-btn" style="font-size:18px;" onclick="del('users','${d.id}')"></i>
+                            </div>
+                            <div style="font-size:13px; opacity:0.8; line-height:1.6;">
+                                <span><i class="fas fa-id-card" style="width:20px;"></i> NIC: ${data.nic || 'N/A'}</span><br>
+                                <span><i class="fas fa-phone" style="width:20px;"></i> Phone: ${d.id}</span><br>
+                                <span><i class="fas fa-venus-mars" style="width:20px;"></i> Gender: ${data.gender || 'N/A'}</span><br>
+                                <span><i class="fas fa-birthday-cake" style="width:20px;"></i> DOB: ${data.dob || 'N/A'}</span>
+                            </div>
+                          </div>`;
+                });
+                document.getElementById('users-list').innerHTML = h || '<p style="text-align:center; opacity:0.5; width:100%;">No users registered yet</p>';
+            });
+        }
     </script>
 </body>
 </html>
+
