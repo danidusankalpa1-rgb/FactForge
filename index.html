@@ -2,105 +2,332 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FactForge - Learning Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FactForge - iOS 26 Liquid UI Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary-red: #ff0000; --dark-blue: #546e7a; --bg-gray: #f2f2f2; --white: #ffffff; }
-        body { font-family: 'Arial', sans-serif; margin: 0; background-color: var(--bg-gray); overflow-x: hidden; }
-        header { background: #ededed; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
-        .search-container { flex-grow: 1; margin: 0 15px; position: relative; }
-        .search-container input { width: 100%; padding: 8px 35px; border-radius: 10px; border: 1px solid #ccc; box-sizing: border-box; }
-        .search-container i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; }
-        .sidebar { position: fixed; left: -100%; top: 0; width: 280px; height: 100%; background: #ededed; transition: 0.3s; z-index: 2000; padding-top: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+        :root {
+            --ios-accent: #ff3b30;
+            --glass: rgba(30, 30, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --event-color: #34c759;
+        }
+
+        * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        input, select { -webkit-user-select: text; user-select: text; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white; border-radius: 10px; padding: 10px; margin-top: 5px; width: 100%; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: #000; margin: 0; min-height: 100vh; color: #fff; overflow-x: hidden; }
+        header { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(25px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; border-bottom: 0.5px solid var(--glass-border); }
+
+        .header-icons { display: flex; align-items: center; gap: 20px; }
+        .notif-btn { position: relative; cursor: pointer; }
+        .red-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--ios-accent); border-radius: 50%; display: none; z-index: 10; }
+        .profile-btn { font-size: 20px; cursor: pointer; }
+
+        /* SEARCH BAR */
+        #searchContainer { padding: 0 20px; margin-bottom: 15px; display: none; opacity: 0; transform: translateY(-10px); transition: all 0.4s ease; }
+        #searchContainer.active { display: block !important; opacity: 1 !important; transform: translateY(0) !important; }
+        .search-box { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 15px; padding: 12px 15px; display: flex; align-items: center; border: 1px solid var(--glass-border); }
+        .search-box input { background: transparent; border: none; margin-left: 10px; padding: 0; width: 100%; color: white; }
+
+        .category-container { display: flex; justify-content: center; margin: 20px 0; }
+        .category-box { background: rgba(40, 40, 40, 0.5); backdrop-filter: blur(15px); border-radius: 50px; display: flex; padding: 5px; position: relative; border: 1px solid var(--glass-border); width: 220px; }
+        .category-box span { flex: 1; text-align: center; padding: 12px 0; z-index: 2; font-weight: 600; cursor: pointer; }
+        .liquid-bubble { position: absolute; top: 5px; left: 5px; width: 105px; height: calc(100% - 10px); background: var(--ios-accent); border-radius: 50px; z-index: 1; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+
+        .sidebar { position: fixed; left: -100%; top: 0; width: 75%; height: 100%; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(35px); transition: 0.5s; z-index: 2100; padding: 50px 25px; display: flex; flex-direction: column; }
         .sidebar.active { left: 0; }
-        .menu-item { padding: 15px 20px; margin: 5px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .section { display: none; padding: 15px; max-width: 500px; margin: auto; }
-        .section.active { display: block; }
-        .title-bar { background: var(--dark-blue); color: white; text-align: center; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
-        .card { background: var(--white); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .red-btn { background: var(--primary-red); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #notifPopup { display: none; position: fixed; top: 60px; right: 10px; width: 300px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1500; padding: 15px; }
-        #videoOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; flex-direction: column; justify-content: center; }
+        .menu-item { padding: 16px; border-radius: 18px; display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); font-size: 17px; margin-bottom: 10px; }
+        .menu-item i { margin-right: 15px; width: 20px; text-align: center; color: var(--ios-accent); }
+
+        @keyframes pulseEvent { 0% { transform: scale(1); } 50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(52, 199, 89, 0.2); } 100% { transform: scale(1); } }
+        .event-item { background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3); animation: pulseEvent 2s infinite ease-in-out; }
+
+        .liquid-popup { display: none; position: fixed; inset: 0; z-index: 4000; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); align-items: center; justify-content: center; padding: 20px; }
+        .popup-content { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 30px; padding: 25px; width: 100%; max-width: 400px; animation: liquidIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        @keyframes liquidIn { from { transform: scale(0.5); border-radius: 50%; opacity: 0; } to { transform: scale(1); border-radius: 30px; opacity: 1; } }
+
+        #liquidPlayer { display: none; position: fixed; inset: 0; z-index: 3000; background: #000; align-items: center; justify-content: center; }
+        .player-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .back-nav { padding: 20px; display: flex; align-items: center; background: rgba(0,0,0,0.5); }
+
+        .video-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .video-thumb { width: 150px; height: 85px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--glass-border); }
+
+        #notifPopup { display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: var(--glass); backdrop-filter: blur(30px); border-radius: 24px; padding: 20px; z-index: 1500; border: 1px solid var(--glass-border); }
+        .section { display: none; padding: 10px 20px; }
+        .section.active { display: block; animation: fadeIn 0.5s; }
+        .ios-btn { background: var(--ios-accent); color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body>
+<body onload="checkUser()">
+
+    <div id="regPopup" class="liquid-popup">
+        <div class="popup-content">
+            <h2 style="text-align: center;">Welcome to FactForge</h2>
+            <label>Name</label><input type="text" id="regName">
+            <label>Gender</label><select id="regGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+            <label>Birthday</label><input type="date" id="regDOB">
+            <label>NIC Number</label><input type="text" id="regNIC">
+            <label>Phone Number</label><input type="tel" id="regPhone">
+            <button id="regSubmitBtn" class="ios-btn" onclick="saveUser()">Submit & Enter</button>
+        </div>
+    </div>
+
+    <div id="profilePopup" class="liquid-popup" onclick="this.style.display='none'">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: #333; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 2px solid var(--ios-accent); overflow: hidden;">
+                    <i class="fas fa-user fa-2x"></i>
+                </div>
+                <h3 id="profDisplayName">Name</h3>
+            </div>
+            <p><b>Gender:</b> <span id="profGender"></span></p>
+            <p><b>DOB:</b> <span id="profDOB"></span></p>
+            <p><b>Phone:</b> <span id="profPhone"></span></p>
+            <label>NIC Number</label><input type="text" id="profNIC" placeholder="Enter NIC">
+            <button class="ios-btn" onclick="updateNIC()">Update NIC</button>
+        </div>
+    </div>
+
+    <div id="liquidPlayer">
+        <div class="player-wrapper">
+            <div class="back-nav" onclick="closeVideo()"><i class="fas fa-chevron-left"></i> &nbsp; Back to FactForge</div>
+            <iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <header>
-        <i class="fas fa-bars" onclick="toggleSidebar()"></i>
-        <div class="search-container"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search..." onkeyup="search()"></div>
-        <i class="fas fa-bell" onclick="toggleNotif()"></i>
+        <i class="fas fa-bars-staggered" onclick="toggleSidebar(true)"></i>
+        <span style="font-weight: 800;">FACTFORGE</span>
+        <div class="header-icons">
+            <div class="notif-btn" onclick="toggleNotif(true)">
+                <i class="fas fa-bell"></i>
+                <div id="notifDot" class="red-dot"></div>
+            </div>
+            <div class="profile-btn" onclick="openProfile()"><i class="fas fa-circle-user"></i></div>
+        </div>
     </header>
 
-    <div class="sidebar" id="sidebar">
-        <div class="menu-item" style="background:red;color:white" onclick="showSection('dashboard')">Dash bord</div>
-        <div class="menu-item" style="background:black;color:white" onclick="showSection('videos')">All videos</div>
-        <div class="menu-item" style="background:black;color:white" onclick="showSection('notes')">All notes</div>
-        <div class="menu-item" style="background:black;color:white;position:absolute;bottom:20px;width:220px" onclick="showSection('about')">About Us</div>
-    </div>
-
-    <div id="notifPopup"><strong>Notifications</strong><hr><div id="notifList"></div></div>
-
-    <div id="dashboard" class="section active">
-        <div class="title-bar">Home</div>
-        <div class="card" style="text-align:center">
-            <img src="logo.jpg" style="width:100px;border-radius:15px;background:black">
-            <h2>Welcome !</h2>
-            <p>Website developed by Danidu Sankalpa<br>FactForge Admin : Danidu Sankalpa</p>
+    <div class="category-container">
+        <div class="category-box">
+            <div id="bubble" class="liquid-bubble"></div>
+            <span onclick="changeTab('videos', 5)">Videos</span>
+            <span onclick="changeTab('notes', 110)">Notes</span>
         </div>
-        <button class="red-btn" style="margin-bottom:10px" onclick="showSection('videos')">Videos</button>
-        <button class="red-btn" onclick="showSection('notes')">Notes</button>
     </div>
 
-    <div id="videos" class="section"><div class="title-bar">All Videos</div><div id="vList"></div></div>
-    <div id="notes" class="section"><div class="title-bar">All Notes</div><div id="nList"></div></div>
-    <div id="about" class="section"><div class="title-bar">About Us</div><div class="card" style="text-align:center"><h2>FactForge</h2><p>Contact: +94753443030</p></div></div>
+    <div id="searchContainer">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search title..." onkeyup="filterContent(event)">
+        </div>
+    </div>
 
-    <div id="videoOverlay"><button onclick="closeVideo()" style="color:white;align-self:flex-end;font-size:40px;background:none;border:none">&times;</button><div id="player"></div></div>
+    <div class="sidebar" id="sidebar">
+        <i class="fas fa-times" onclick="toggleSidebar(false)" style="font-size: 24px; margin-bottom: 20px;"></i>
+        <div class="menu-item" onclick="showSection('dashboard')"><i class="fas fa-house"></i> Home</div>
+        <div id="sidebarEvents"></div>
+        <div style="flex-grow: 1;"></div>
+        <div class="menu-item" onclick="showSection('about')"><i class="fas fa-info-circle"></i> About Us</div>
+    </div>
+
+    <div id="notifPopup">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><b>Notifications</b><i class="fas fa-circle-xmark" onclick="toggleNotif(false)"></i></div>
+        <div id="notifList"></div>
+    </div>
+
+    <div id="dashboard" class="section active" style="text-align:center;">
+        <div class="card" style="background: rgba(255,255,255,0.05); border-radius: 25px; padding: 20px; border: 1px solid var(--glass-border);">
+            <img src="logosite.jpg" style="width: 100px; border-radius: 25px;">
+            <h2>FactForge</h2>
+            <p style="opacity:0.6;">Developed by Danidu Sankalpa</p>
+        </div>
+    </div>
+
+    <div id="videos" class="section"><div id="vList"></div></div>
+    <div id="notes" class="section"><div id="nList"></div></div>
+    <div id="about" class="section" style="text-align:center;"><div class="card" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 25px;"><h3>About Us</h3><p>Contact : +94753443030</p></div></div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBnv4y9sdTs20pc-ppc4CuxbRcPZacBXI8",
-            authDomain: "factforge-ece11.firebaseapp.com",
-            projectId: "factforge-ece11",
-            storageBucket: "factforge-ece11.firebasestorage.app",
-            messagingSenderId: "301436944758",
-            appId: "1:301436944758:web:547042aca0cf178e61ba57"
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBnv4y9sdTs20pc-ppc4CuxbRcPZacBXI8", 
+        authDomain: "factforge-ece11.firebaseapp.com", 
+        projectId: "factforge-ece11", 
+        storageBucket: "factforge-ece11.firebasestorage.app", 
+        messagingSenderId: "301436944758", 
+        appId: "1:301436944758:web:547042aca0cf178e61ba57" 
+    };
+    const db = getFirestore(initializeApp(firebaseConfig));
+
+
+        let userData = null;
+
+window.checkUser = async () => {
+    const saved = localStorage.getItem('ff_user');
+    if(!saved) { 
+        document.getElementById('regPopup').style.display = 'flex'; 
+    } else { 
+        userData = JSON.parse(saved);
+        try {
+            const userDoc = await getDoc(doc(db, "users", userData.phone));
+            if(!userDoc.exists()) {
+                localStorage.removeItem('ff_user');
+                location.reload();
+                return;
+            }
+            checkBirthday();
+        } catch (e) { checkBirthday(); }
+    }
+};
+
+window.saveUser = async () => {
+    const name = document.getElementById('regName').value.trim();
+    const dob = document.getElementById('regDOB').value;
+    const phone = document.getElementById('regPhone').value.trim();
+    const nic = document.getElementById('regNIC').value.trim();
+    const gender = document.getElementById('regGender').value;
+
+    if(!name || !dob || !phone || !nic) {
+        alert("Please fill all details!");
+        return;
+    }
+
+    const btn = document.getElementById('regSubmitBtn');
+    btn.innerText = "Registering...";
+    btn.disabled = true;
+
+    const uData = { name, gender, dob, phone, nic, registeredAt: new Date().toISOString() };
+    
+    try {
+        await setDoc(doc(db, "users", phone), uData);
+        localStorage.setItem('ff_user', JSON.stringify(uData));
+        alert("Success!");
+        document.getElementById('regPopup').style.display = 'none';
+        location.reload(); 
+    } catch (e) {
+        console.error(e);
+        alert("Registration failed! Check your internet connection.");
+        btn.innerText = "Submit & Enter";
+        btn.disabled = false;
+    }
+};
+
+
+        window.changeTab = (id, pos) => {
+    const bubble = document.getElementById('bubble');
+    if (bubble) {
+        bubble.style.display = 'block'; // Home/About වලදී hide වුණු බෝලය මෙතැනදී ආපහු පෙන්වනවා
+        bubble.style.left = pos + 'px';
+    }
+    
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    
+    const search = document.getElementById('searchContainer');
+    if(id === 'videos' || id === 'notes') {
+        search.classList.add('active');
+    } else {
+        search.classList.remove('active');
+    }
+};
+
+window.showSection = (id) => {
+    const bubble = document.getElementById('bubble');
+    if (bubble) {
+        bubble.style.display = 'none'; // Dashboard හෝ About වලදී බෝලය hide කරනවා
+    }
+
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const targetSection = document.getElementById(id);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    document.getElementById('searchContainer').classList.remove('active');
+    toggleSidebar(false);
+};
+
+        window.filterContent = (e) => {
+            const term = e.target.value.toLowerCase();
+            const activeSection = document.querySelector('.section.active');
+            if (!activeSection) return;
+            activeSection.querySelectorAll('.card').forEach(card => {
+                const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
+                const text = card.querySelector('p')?.innerText.toLowerCase() || "";
+                card.style.display = (title.includes(term) || text.includes(term)) ? 'block' : 'none';
+            });
         };
 
-        const db = getFirestore(initializeApp(firebaseConfig));
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('active');
-        window.toggleNotif = () => { const p = document.getElementById('notifPopup'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; };
-        window.showSection = (id) => { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); toggleSidebar(); };
+        // UI Handlers
+        window.toggleSidebar = (s) => document.getElementById('sidebar').classList.toggle('active', s);
+        window.toggleNotif = (s) => {
+            document.getElementById('notifPopup').style.display = s ? 'block' : 'none';
+            if(s) document.getElementById('notifDot').style.display = 'none';
+        };
+        window.openProfile = () => {
+            if(!userData) return;
+            document.getElementById('profDisplayName').innerText = userData.name;
+            document.getElementById('profGender').innerText = userData.gender;
+            document.getElementById('profDOB').innerText = userData.dob;
+            document.getElementById('profPhone').innerText = userData.phone;
+            document.getElementById('profNIC').value = userData.nic || '';
+            document.getElementById('profilePopup').style.display = 'flex';
+        };
+        window.updateNIC = async () => {
+            const nic = document.getElementById('profNIC').value;
+            await updateDoc(doc(db, "users", userData.phone), { nic: nic });
+            userData.nic = nic;
+            localStorage.setItem('ff_user', JSON.stringify(userData));
+            alert("Updated!");
+        };
 
+        // Listeners
         onSnapshot(query(collection(db, "videos"), orderBy("timestamp", "desc")), (s) => {
-            let h = ''; s.forEach(d => {
-                const data = d.data(); const id = data.url.split('v=')[1]?.split('&')[0] || data.url.split('/').pop();
-                h += `<div class="card video-card" data-title="${data.title.toLowerCase()}"><h3>${data.title}</h3><hr><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" style="width:100%"><button class="red-btn" onclick="playVideo('${id}')">Watch video</button></div>`;
+            let h = ''; s.forEach(doc => {
+                const vidId = doc.data().url.split('v=')[1]?.split('&')[0] || doc.data().url.split('/').pop();
+                h += `<div class="card video-card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
+                        <img src="https://i.ytimg.com/vi/${vidId}/mqdefault.jpg" class="video-thumb">
+                        <h3 style="font-size:16px; margin:5px 0;">${doc.data().title}</h3>
+                        <button class="ios-btn" onclick="playVideo('${doc.data().url}')">Watch Video</button>
+                      </div>`;
             }); document.getElementById('vList').innerHTML = h;
         });
 
-        onSnapshot(query(collection(db, "notes"), orderBy("timestamp", "desc")), (s) => {
-            let h = ''; s.forEach(d => {
-                const data = d.data(); const lines = data.text.split('\n');
-                h += `<div class="card note-card" data-title="${data.title.toLowerCase()}"><h3>${data.title}</h3><hr><p id="t-${d.id}">${lines.slice(0,7).join('\n')}</p>${lines.length > 7 ? `<button class="red-btn" onclick="expand('${d.id}',\`${data.text.replace(/`/g,'\\`')}\`)">Open full note</button>`:'' }</div>`;
-            }); document.getElementById('nList').innerHTML = h;
+        onSnapshot(collection(db, "notes"), (s) => {
+            let h = ''; s.forEach(doc => h += `<div class="card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);"><h3>${doc.data().title}</h3><p style="white-space: pre-wrap;">${doc.data().text}</p></div>`);
+            document.getElementById('nList').innerHTML = h;
+        });
+
+        onSnapshot(collection(db, "events"), (s) => {
+            let h = ''; s.forEach(doc => h += `<div class="menu-item event-item" onclick="window.open('${doc.data().link}', '_blank')"><i class="fas fa-calendar-check"></i> ${doc.data().name}</div>`);
+            document.getElementById('sidebarEvents').innerHTML = h;
         });
 
         onSnapshot(query(collection(db, "notifications"), orderBy("timestamp", "desc")), (s) => {
-            let h = ''; const now = Date.now();
-            s.forEach(d => { if(now - d.data().timestamp < 5*24*60*60*1000) h += `<div style="margin-bottom:10px"><b>${d.data().message}</b><br><small>${new Date(d.data().timestamp).toLocaleDateString()}</small></div><hr>`; });
-            document.getElementById('notifList').innerHTML = h || 'No notifications';
+            let h = ''; s.forEach(doc => h += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid var(--glass-border); font-size:14px;">${doc.data().message}</div>`);
+            document.getElementById('notifList').innerHTML = h || 'No updates';
+            if(!s.metadata.hasPendingWrites) document.getElementById('notifDot').style.display = 'block';
         });
 
-        let player;
-        window.playVideo = (id) => { document.getElementById('videoOverlay').style.display='flex'; if(player) player.loadVideoById(id); else player = new YT.Player('player', {height:'360', width:'100%', videoId:id}); };
-        window.closeVideo = () => { document.getElementById('videoOverlay').style.display='none'; player.stopVideo(); };
-        window.expand = (id, txt) => { document.getElementById('t-'+id).innerText = txt; event.target.style.display='none'; };
-        window.search = () => { let v = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.video-card, .note-card').forEach(c => c.style.display = c.dataset.title.includes(v) ? 'block' : 'none'); };
+        window.playVideo = (url) => {
+            const id = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+            document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            document.getElementById('liquidPlayer').style.display = 'flex';
+        };
+        window.closeVideo = () => { document.getElementById('liquidPlayer').style.display = 'none'; document.getElementById('ytFrame').src = ''; };
+
+        function checkBirthday() {
+            const today = new Date();
+            const bDay = new Date(userData.dob);
+            if(today.getDate() === bDay.getDate() && today.getMonth() === bDay.getMonth()) {
+                document.getElementById('notifDot').style.display = 'block';
+            }
+        }
     </script>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
