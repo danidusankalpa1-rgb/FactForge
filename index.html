@@ -256,21 +256,274 @@
         .section.active { display: block; animation: fadeIn 0.5s; }
         .ios-btn { background: var(--ios-accent); color: white; border: none; width: 100%; padding: 12px; border-radius: 14px; font-weight: bold; margin-top: 10px; cursor: pointer; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Sidebar Overlay - Notification බටන් එක බ්ලොක් නොවීමට pointer-events: none දමන්න */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    z-index: 2050;
+    display: none; /* මුලින් සම්පූර්ණයෙන්ම අයින් කරලා තියෙන්නේ */
+}
+
+
+/* Sidebar ඇරිලා තියෙද්දී විතරක් overlay එක touch කරන්න පුළුවන් */
+.sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Sidebar Curve හැඩය */
+.sidebar {
+    border-radius: 0 40px 40px 0 !important;
+}
+
+/* Sidebar Glass Look & Curve */
+.sidebar {
+    background: rgba(15, 15, 15, 0.7) !important; /* විනිවිද පෙනෙන ගතිය */
+    backdrop-filter: blur(30px) saturate(180%) !important; /* මීදුම ගතිය වැඩි කළා */
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 40px 40px 0 !important;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+/* Sidebar ඇතුළේ ඇති Items වලට Neon Effect එක */
+.menu-item:active, .ios-btn:active, .event-item:active {
+    transform: scale(0.95) !important;
+    background: rgba(255, 59, 48, 0.2) !important; /* තද රතු පාට දිලිසීම */
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.4) !important;
+    transition: 0.2s ease;
+}
+
+/* Event අයිකන් එක දිලිසෙන Animation එක */
+@keyframes electricGlow {
+    from { filter: drop-shadow(0 0 2px #34c759); }
+    to { filter: drop-shadow(0 0 12px #34c759); }
+}
+
+/* Sidebar Overlay එක Notification බ්ලොක් නොවන ලෙස */
+.sidebar-overlay {
+    display: none; /* Sidebar වසා ඇති විට සම්පූර්ණයෙන්ම අයින් වේ */
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    z-index: 2050;
+}
+.sidebar-overlay.active { display: block !important; }
+
+/* සියලුම Buttons සඳහා Click/Touch Effect එක */
+.ios-btn, .menu-item, .event-item, .notif-btn, .profile-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+/* මෙන්න මේකයි Neon Effect එක */
+.ios-btn:active, 
+.menu-item:active, 
+.event-item:active, 
+.notif-btn:active, 
+.profile-btn:active,
+header i:active {
+    transform: scale(0.9) !important; /* බොත්තම එබෙන ගතිය */
+    background-color: rgba(255, 59, 48, 0.4) !important; /* රතු පාට Glow එක */
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.8), 
+                0 0 40px rgba(255, 59, 48, 0.4) !important; /* තද Neon Glow එක */
+    border-color: #ff3b30 !important;
+    color: white !important;
+}
+
+/* Sidebar එක ඇතුළේ items වලට විශේෂයෙන් */
+.sidebar .menu-item:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+
+/* Light Mode Styles */
+body.light-mode {
+    background: #f0f0f7;
+    color: #000;
+}
+body.light-mode header {
+    background: rgba(255, 255, 255, 0.7);
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+body.light-mode .sidebar {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(30px) saturate(200%) !important;
+}
+body.light-mode .menu-item {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+/* --- Light Mode එකේදී Popups සහ Cards සඳහා විශේෂ Liquid Look --- */
+
+body.light-mode .liquid-popup .popup-content,
+body.light-mode #notifPopup {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #000 !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+/* Light mode එකේදී අකුරු කළු පාට කිරීම */
+body.light-mode h2, 
+body.light-mode h3, 
+body.light-mode p, 
+body.light-mode b, 
+body.light-mode span,
+body.light-mode label {
+    color: #222 !important;
+}
+
+/* Input Fields - Light Mode Liquid Style */
+body.light-mode input, 
+body.light-mode select {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: #000 !important;
+}
+
+/* Video සහ Notes Cards සඳහා Liquid Glass Look එක */
+body.light-mode .card, 
+body.light-mode .video-card {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05) !important;
+}
+
+/* Notification list එක ඇතුළේ තියෙන අයිටම් */
+body.light-mode #notifList div {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    color: #333 !important;
+}
+
+/* Dashboard එකේ Card එක */
+body.light-mode #dashboard .card {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+body.light-mode .card, body.light-mode .search-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0,0,0,0.05);
+    color: #000;
+}
+body.light-mode .search-box input { color: #000; }
+body.light-mode .category-box { background: rgba(0,0,0,0.05); }
+
+/* Toggle Button Style */
+.theme-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(120, 120, 128, 0.16);
+    padding: 12px 16px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+/* Input Validation Styles */
+.input-group { position: relative; margin-bottom: 20px; }
+.error-msg { 
+    color: #ff3b30; font-size: 11px; margin-top: 4px; 
+    display: none; font-weight: 500; 
+}
+input.invalid { border-color: #ff3b30 !important; background: rgba(255, 59, 48, 0.05) !important; }
+input.valid { border-color: #34c759 !important; background: rgba(52, 199, 89, 0.05) !important; }
+
+/* Input Validation Styles */
+.input-group { 
+    position: relative; 
+    margin-bottom: 20px; 
+    text-align: left; 
+}
+
+/* Icon style inside input */
+.input-group i.status-icon {
+    position: absolute;
+    right: 15px;
+    top: 42px; /* label එකට අනුව වෙනස් විය හැක */
+    font-size: 14px;
+    display: none;
+}
+
+.error-msg { 
+    color: #ff3b30; 
+    font-size: 11px; 
+    margin-top: 6px; 
+    display: none; 
+    font-weight: 500;
+}
+
+/* රතු පාට - වැරදි විට */
+input.invalid { 
+    border: 2px solid #ff3b30 !important; 
+    background: rgba(255, 59, 48, 0.1) !important; 
+}
+
+/* කොළ පාට - හරි විට */
+input.valid { 
+    border: 2px solid #34c759 !important; 
+    background: rgba(52, 199, 89, 0.1) !important; 
+}
+
+
     </style>
 </head>
 <body onload="checkUser()">
+  
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<div class="bg-glow" style="top: 10%; left: -50px; background: var(--ios-accent);"></div>
+<div class="bg-glow" style="bottom: 10%; right: -50px; background: #34c759;"></div>
+
+<div id="customAlert" class="liquid-popup" style="z-index: 9999;">
+    <div class="popup-content" style="text-align: center; border: 1px solid rgba(255,255,255,0.3);">
+        <i class="fas fa-circle-exclamation" style="font-size: 40px; color: var(--ios-accent); margin-bottom: 15px;"></i>
+        <h3 id="alertTitle" style="margin-bottom: 10px;">FactForge</h3>
+        <p id="alertMessage" style="opacity: 0.8; font-size: 15px; margin-bottom: 20px;"></p>
+        <button class="ios-btn" onclick="closeAlert()">Dismiss</button>
+    </div>
+</div>
+
 
     <div id="regPopup" class="liquid-popup">
-        <div class="popup-content">
-            <h2 style="text-align: center;">Welcome to FactForge</h2>
-            <label>Name</label><input type="text" id="regName">
-            <label>Gender</label><select id="regGender"><option value="Male">Male</option><option value="Female">Female</option></select>
-            <label>Birthday</label><input type="date" id="regDOB">
-            <label>NIC Number</label><input type="text" id="regNIC">
-            <label>Phone Number</label><input type="tel" id="regPhone">
-            <button id="regSubmitBtn" class="ios-btn" onclick="saveUser()">Submit & Enter</button>
-        </div>
+    <div class="popup-content">
+        <h2 style="text-align: center;">Welcome to FactForge</h2>
+        
+        <div class="input-group">
+    <label>Name</label>
+    <input type="text" id="regName" oninput="validateLiveName()" placeholder="Enter your name">
+    <i id="nameIcon" class="fas status-icon"></i> <div id="nameError" class="error-msg">කරුණාකර වලංගු නමක් ඇතුළත් කරන්න.</div>
+</div>
+
+<div class="input-group">
+    <label>NIC Number</label>
+    <input type="text" id="regNIC" oninput="validateLiveNIC()" placeholder="10 Digits NIC">
+    <i id="nicIcon" class="fas status-icon"></i> <div id="nicError" class="error-msg">ඉලක්කම් 10ක් අනිවාර්යයි.</div>
+</div>
+
+<div class="input-group">
+    <label>Phone Number</label>
+    <input type="tel" id="regPhone" oninput="validateLivePhone()" placeholder="07xxxxxxxx">
+    <i id="phoneIcon" class="fas status-icon"></i> <div id="phoneError" class="error-msg">වලංගු 07x අංකයක් ඇතුළත් කරන්න.</div>
+</div>
+
+
+        <label>Gender</label><select id="regGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+        <label>Birthday</label><input type="date" id="regDOB">
+        
+        <button id="regSubmitBtn" class="ios-btn" onclick="saveUser()">Submit & Enter</button>
     </div>
+</div>
+
 
     <div id="profilePopup" class="liquid-popup" onclick="this.style.display='none'">
         <div class="popup-content" onclick="event.stopPropagation()">
@@ -282,9 +535,9 @@
             </div>
             <p><b>Gender:</b> <span id="profGender"></span></p>
             <p><b>DOB:</b> <span id="profDOB"></span></p>
-            <p><b>Phone:</b> <span id="profPhone"></span></p>
-            <label>NIC Number</label><input type="text" id="profNIC" placeholder="Enter NIC">
-            <button class="ios-btn" onclick="updateNIC()">Update NIC</button>
+            <p><b>NIC Number:</b> <span id="profNICDisplay"></span></p>
+            <label>Phone Number</label><input type="tel" id="profPhoneInput" placeholder="07xxxxxxxx">
+            <button class="ios-btn" onclick="updatePhone()">Update Phone Number</button>
         </div>
     </div>
 
@@ -307,8 +560,6 @@
             </div>
         </div>
     </div>
-</div>
-
 </div>
 
     <header>
@@ -340,10 +591,16 @@
 
     <div class="sidebar" id="sidebar">
         <i class="fas fa-times" onclick="toggleSidebar(false)" style="font-size: 24px; margin-bottom: 20px;"></i>
+        
         <div class="menu-item" onclick="showSection('dashboard')"><i class="fas fa-house"></i> Home</div>
         <div id="sidebarEvents"></div>
         <div style="flex-grow: 1;"></div>
         <div class="menu-item" onclick="showSection('about')"><i class="fas fa-info-circle"></i> About Us</div>
+        <div class="theme-switch" onclick="toggleTheme()">
+    <span><i class="fas fa-circle-half-stroke"></i> Appearance</span>
+    <span id="themeLabel">Dark</span>
+</div>
+
     </div>
 
     <div id="notifPopup">
@@ -394,20 +651,75 @@ window.checkUser = async () => {
                 location.reload();
                 return;
             }
-            checkBirthday();
-        } catch (e) { checkBirthday(); }
+        } catch (e) { }
     }
 };
 
-window.saveUser = async () => {
-    const name = document.getElementById('regName').value.trim();
-    const dob = document.getElementById('regDOB').value;
-    const phone = document.getElementById('regPhone').value.trim();
-    const nic = document.getElementById('regNIC').value.trim();
-    const gender = document.getElementById('regGender').value;
+window.toggleTheme = () => {
+    const body = document.body;
+    const label = document.getElementById('themeLabel');
+    
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    
+    label.innerText = isLight ? "Light" : "Dark";
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};
 
-    if(!name || !dob || !phone || !nic) {
-        alert("Please fill all details!");
+if(localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('themeLabel').innerText = "Light";
+}
+
+// --- Live Validation Functions ---
+window.validateLiveName = () => {
+    const el = document.getElementById('regName');
+    const err = document.getElementById('nameError');
+    const name = el.value.trim();
+    const hasVowels = /[aeiouAEIOU]/.test(name);
+    const noNumbers = !/[0-9]/.test(name);
+    const noRepeats = !/(.)\1\1/.test(name);
+
+    if (name.length > 2 && hasVowels && noNumbers && noRepeats) {
+        el.className = 'valid';
+        err.style.display = 'none';
+        return true;
+    } else {
+        el.className = 'invalid';
+        err.style.display = 'block';
+        return false;
+    }
+};
+
+window.validateLiveNIC = () => {
+    const el = document.getElementById('regNIC');
+    const err = document.getElementById('nicError');
+    const valid = /^[0-9]{10,12}$/.test(el.value);
+    el.className = valid ? 'valid' : 'invalid';
+    err.style.display = valid ? 'none' : 'block';
+    return valid;
+};
+
+window.validateLivePhone = () => {
+    const el = document.getElementById('regPhone');
+    const err = document.getElementById('phoneError');
+    const prefix = el.value.substring(0, 3);
+    const validPrefixes = ['070','071','072','074','075','076','077','078'];
+    const valid = el.value.length === 10 && validPrefixes.includes(prefix);
+    el.className = valid ? 'valid' : 'invalid';
+    err.style.display = valid ? 'none' : 'block';
+    return valid;
+};
+
+// --- Main Registration Function ---
+window.saveUser = async () => {
+    const isNameValid = window.validateLiveName();
+    const isNICValid = window.validateLiveNIC();
+    const isPhoneValid = window.validateLivePhone();
+    const dob = document.getElementById('regDOB').value;
+
+    if (!isNameValid || !isNICValid || !isPhoneValid || !dob) {
+        window.showMsg("කරුණාකර රතු පාටින් ඇති දත්ත සහ උපන්දිනය නිවැරදි කරන්න.");
         return;
     }
 
@@ -415,122 +727,142 @@ window.saveUser = async () => {
     btn.innerText = "Registering...";
     btn.disabled = true;
 
-    const uData = { name, gender, dob, phone, nic, registeredAt: new Date().toISOString() };
+    const uData = { 
+        name: document.getElementById('regName').value.trim(), 
+        gender: document.getElementById('regGender').value, 
+        dob: dob, 
+        phone: document.getElementById('regPhone').value.trim(), 
+        nic: document.getElementById('regNIC').value.trim(), 
+        registeredAt: new Date().toISOString() 
+    };
     
     try {
-        await setDoc(doc(db, "users", phone), uData);
+        await setDoc(doc(db, "users", uData.phone), uData);
         localStorage.setItem('ff_user', JSON.stringify(uData));
-        alert("Success!");
-        document.getElementById('regPopup').style.display = 'none';
-        location.reload(); 
+        window.showMsg("ලියාපදිංචිය සාර්ථකයි!");
+        setTimeout(() => { location.reload(); }, 2000);
     } catch (e) {
-        console.error(e);
-        alert("Registration failed! Check your internet connection.");
+        console.error("Firebase Error: ", e);
+        window.showMsg("දත්ත ඇතුළත් කිරීම අසාර්ථකයි! (Internet Connection එක පරීක්ෂා කරන්න)");
         btn.innerText = "Submit & Enter";
         btn.disabled = false;
     }
 };
 
-
-        window.changeTab = (id, pos) => {
-    const bubble = document.getElementById('bubble');
-    if (bubble) {
-        bubble.style.display = 'block'; // Home/About වලදී hide වුණු බෝලය මෙතැනදී ආපහු පෙන්වනවා
-        bubble.style.left = pos + 'px';
-    }
-    
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    
-    const search = document.getElementById('searchContainer');
-    if(id === 'videos' || id === 'notes') {
-        search.classList.add('active');
+window.toggleSidebar = (status) => {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (status) {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
     } else {
-        search.classList.remove('active');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
     }
 };
 
 window.showSection = (id) => {
-    const bubble = document.getElementById('bubble');
-    if (bubble) {
-        bubble.style.display = 'none'; // Dashboard හෝ About වලදී බෝලය hide කරනවා
-    }
-
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    const targetSection = document.getElementById(id);
-    if (targetSection) {
-        targetSection.classList.add('active');
-    }
-
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    const bubble = document.getElementById('bubble');
+    if (bubble) bubble.style.display = 'none';
     document.getElementById('searchContainer').classList.remove('active');
-    toggleSidebar(false);
+    window.toggleSidebar(false);
 };
 
-        window.filterContent = (e) => {
-            const term = e.target.value.toLowerCase();
-            const activeSection = document.querySelector('.section.active');
-            if (!activeSection) return;
-            activeSection.querySelectorAll('.card').forEach(card => {
-                const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
-                const text = card.querySelector('p')?.innerText.toLowerCase() || "";
-                card.style.display = (title.includes(term) || text.includes(term)) ? 'block' : 'none';
-            });
-        };
+window.changeTab = (id, pos) => {
+    const bubble = document.getElementById('bubble');
+    if (bubble) {
+        bubble.style.display = 'block';
+        bubble.style.left = pos + 'px';
+    }
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const search = document.getElementById('searchContainer');
+    if(id === 'videos' || id === 'notes') search.classList.add('active');
+    else search.classList.remove('active');
+};
 
-        // UI Handlers
-        window.toggleSidebar = (s) => document.getElementById('sidebar').classList.toggle('active', s);
-        window.toggleNotif = (s) => {
-            document.getElementById('notifPopup').style.display = s ? 'block' : 'none';
-            if(s) document.getElementById('notifDot').style.display = 'none';
-        };
-        window.openProfile = () => {
-            if(!userData) return;
-            document.getElementById('profDisplayName').innerText = userData.name;
-            document.getElementById('profGender').innerText = userData.gender;
-            document.getElementById('profDOB').innerText = userData.dob;
-            document.getElementById('profPhone').innerText = userData.phone;
-            document.getElementById('profNIC').value = userData.nic || '';
-            document.getElementById('profilePopup').style.display = 'flex';
-        };
-        window.updateNIC = async () => {
-            const nic = document.getElementById('profNIC').value;
-            await updateDoc(doc(db, "users", userData.phone), { nic: nic });
-            userData.nic = nic;
-            localStorage.setItem('ff_user', JSON.stringify(userData));
-            alert("Updated!");
-        };
+window.filterContent = (e) => {
+    const term = e.target.value.toLowerCase();
+    const activeSection = document.querySelector('.section.active');
+    if (!activeSection) return;
+    activeSection.querySelectorAll('.card').forEach(card => {
+        const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
+        const text = card.querySelector('p')?.innerText.toLowerCase() || "";
+        card.style.display = (title.includes(term) || text.includes(term)) ? 'block' : 'none';
+    });
+};
 
-        // Listeners
-        onSnapshot(query(collection(db, "videos"), orderBy("timestamp", "desc")), (s) => {
+window.showMsg = (msg) => {
+    document.getElementById('alertMessage').innerText = msg;
+    document.getElementById('customAlert').style.display = 'flex';
+};
+
+window.closeAlert = () => {
+    document.getElementById('customAlert').style.display = 'none';
+};
+
+window.toggleNotif = (s) => {
+    const notifPopup = document.getElementById('notifPopup');
+    if(notifPopup) {
+        notifPopup.style.display = s ? 'block' : 'none';
+        if(s) document.getElementById('notifDot').style.display = 'none';
+    }
+};
+
+window.openProfile = () => {
+    if(!userData) return;
+    document.getElementById('profDisplayName').innerText = userData.name;
+    document.getElementById('profGender').innerText = userData.gender;
+    document.getElementById('profDOB').innerText = userData.dob;
+    document.getElementById('profNICDisplay').innerText = userData.nic || 'N/A';
+    document.getElementById('profPhoneInput').value = userData.phone || '';
+    document.getElementById('profilePopup').style.display = 'flex';
+};
+
+window.updatePhone = async () => {
+    const phoneInput = document.getElementById('profPhoneInput').value.trim();
+    const validPrefixes = ['070','071','072','074','075','076','077','078'];
+    const prefix = phoneInput.substring(0, 3);
+    const isValid = /^\d+$/.test(phoneInput) && phoneInput.length === 10 && validPrefixes.includes(prefix);
+
+    if(!isValid) {
+        window.showMsg("කරුණාකර වලංගු ලංකාවේ දුරකථන අංකයක් (07x...) ඇතුළත් කරන්න.");
+        return;
+    }
+    try {
+        await updateDoc(doc(db, "users", userData.phone), { phone: phoneInput });
+        userData.phone = phoneInput;
+        localStorage.setItem('ff_user', JSON.stringify(userData));
+        window.showMsg("Phone Number එක සාර්ථකව Update කළා!");
+        document.getElementById('profilePopup').style.display = 'none';
+    } catch (e) {
+        window.showMsg("Update කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
+    }
+};
+
+onSnapshot(query(collection(db, "videos"), orderBy("timestamp", "desc")), (s) => {
     let h = ''; 
     s.forEach(doc => {
-        const data = doc.data(); // පහසුව සඳහා data variable එකකට ගමු
+        const data = doc.data();
         const url = data.url;
         let vidId = "";
-        
-        // YouTube ID එක වෙන් කරගැනීම
-        if (url.includes('v=')) {
-            vidId = url.split('v=')[1].split('&')[0];
-        } else if (url.includes('youtu.be/')) {
-            vidId = url.split('youtu.be/')[1].split('?')[0];
-        } else {
-            vidId = url.split('/').pop();
-        }
+        if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+        else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
+        else vidId = url.split('/').pop();
 
         h += `<div class="card video-card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
                 <img src="https://i.ytimg.com/vi/${vidId}/hqdefault.jpg" class="video-thumb" style="width:100%; height:auto; border-radius:15px; object-fit: cover;">
                 <h3 style="font-size:16px; margin:10px 0;">${data.title}</h3>
-                
                 <button class="ios-btn" onclick="playVideo('${url}', \`${data.title}\`, \`${data.text || ''}\`)">Watch Video</button>
-                
               </div>`;
     }); 
     document.getElementById('vList').innerHTML = h;
 });
 
-
-
-        onSnapshot(collection(db, "notes"), (s) => {
+onSnapshot(collection(db, "notes"), (s) => {
     let h = ''; 
     s.forEach(doc => {
         h += `<div class="card" style="background:rgba(255,255,255,0.05); border-radius:25px; padding:15px; margin-bottom:20px; border:1px solid var(--glass-border);">
@@ -541,7 +873,7 @@ window.showSection = (id) => {
     document.getElementById('nList').innerHTML = h;
 });
 
-        onSnapshot(collection(db, "events"), (s) => {
+onSnapshot(collection(db, "events"), (s) => {
     let h = ''; 
     s.forEach(doc => {
         h += `<div class="menu-item event-item" onclick="window.open('${doc.data().link}', '_blank')">
@@ -552,14 +884,13 @@ window.showSection = (id) => {
     document.getElementById('sidebarEvents').innerHTML = h;
 });
 
+onSnapshot(query(collection(db, "notifications"), orderBy("timestamp", "desc")), (s) => {
+    let h = ''; s.forEach(doc => h += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid var(--glass-border); font-size:14px;">${doc.data().message}</div>`);
+    document.getElementById('notifList').innerHTML = h || 'No updates';
+    if(!s.metadata.hasPendingWrites) document.getElementById('notifDot').style.display = 'block';
+});
 
-        onSnapshot(query(collection(db, "notifications"), orderBy("timestamp", "desc")), (s) => {
-            let h = ''; s.forEach(doc => h += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid var(--glass-border); font-size:14px;">${doc.data().message}</div>`);
-            document.getElementById('notifList').innerHTML = h || 'No updates';
-            if(!s.metadata.hasPendingWrites) document.getElementById('notifDot').style.display = 'block';
-        });
-
-        window.playVideo = (url, title) => {
+window.playVideo = (url, title) => {
     let vidId = "";
     if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
     else if (url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
@@ -567,11 +898,8 @@ window.showSection = (id) => {
 
     if (vidId) {
         document.getElementById('videoTitleDisplay').innerText = title || "FactForge Video";
-        
-        // Volume වැඩ කිරීමට enablejsapi=1 අනිවාර්යයි
         document.getElementById('ytFrame').src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0&enablejsapi=1`;
         document.getElementById('liquidPlayer').style.display = 'flex';
-        
         document.getElementById('volumeSlider').value = 100;
     }
 };
@@ -580,9 +908,7 @@ window.setVolume = (value) => {
     const iframe = document.getElementById('ytFrame');
     if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage(JSON.stringify({
-            "event": "command",
-            "func": "setVolume",
-            "args": [value]
+            "event": "command", "func": "setVolume", "args": [value]
         }), "*");
     }
 };
@@ -591,7 +917,6 @@ window.closeVideo = () => {
     document.getElementById('liquidPlayer').style.display = 'none';
     document.getElementById('ytFrame').src = '';
 };
-
     </script>
 </body>
 </html>
